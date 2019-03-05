@@ -1,0 +1,49 @@
+To check if vagrant is installed and its version
+$ vagrant -v
+
+To list Vargrant boxes
+$ vagrant box list
+
+
+To download an image from vagrant cloud. But it won't install the box. It will just put that box on your machine.
+$ vagrant box add ubuntu/trusty64
+
+To create the vagrant file for a particular image
+$ vagrant init ubuntu/trusty64
+
+To create a default vagrant file
+$ vagrant init
+
+To start a Vargrant box (it uses a .vagrant file). Go to the directory where the .vagrant file is there
+It will import the image (if already imported checks for updates), will boot-up the Linux VM, add a vagrant user and create ssh privileges for that 
+user so that you do not need a password.
+$ vagrant up
+
+To ssh into a vagrant box go to the directory where your vagrant box is located then type. It will ssh as vagrant user.
+$ vagrant ssh
+
+If you are running multiple VMs then you need to mention the VM name
+$ vagrant ssh <machine1>
+
+Whenever you sping up a box its always a good idea to update the VM
+$ sudo apy-get update
+
+You can execute any command on the command prompt as you would normally to on any Linux box. Like
+$ sudo apt-get install nginx
+
+To reload the configuration from the vagrant file. It will reboot the VM.
+$ vagrant reload
+
+To stop and delete all traces of the vagrant machine. use -f option to do it forcefully
+$ vagrant destroy
+
+To see status of a virtual machine
+$ vagrant status <VM_name>
+
+To shut down a VM forcefully
+$ vagrant halt
+
+To simply suspend the virtual machine
+$ vagrant suspend 
+
+In either of the above cases, to restart it again, simply run `vagrant up`.

@@ -1,0 +1,39 @@
+version: '2'
+# define all the services of the application
+services:
+# service 1 description to build and run the container.
+  dockerapp:
+# build instruction defines the path to the Dockerfile used to build the D app image.
+    build: ./eclipse-workspace/dockerapp/dockerapp/app
+    ports:
+# Which ports of the container to expose to external network. It is analogus to the -p flag of run command
+      - "5000:5000"
+# Volume is a designated directory in a container to persist data independent of C lifecycle. Used to share data between C and host VM.
+# When we use Volumes, we do not need to give COPY instruction in the Dockerfile. Format is- host_directory:container:directory     
+# This allows us to make changes in the host machine and see the effect directly on the container, without rebuilding the image.
+    volumes:  
+      - ./eclipse-workspace/dockerapp/dockerapp/app:/app
+# Specify the network (if not the default one) to be used by this service
+    networks:
+      - my_net    
+      
+      
+# service 2 description     
+  redis:
+# now we can either use build or image.
+# image instruction defines which image to run
+    image:  redis:3.2.0
+# Specify the network (if not the default one) to be used by this service
+    networks:
+      - my_net
+
+
+# To define the creation of networks
+networks:
+# Specify the name of your network
+  my_net:
+# Specify the driver to be used
+    driver: bridge
+    
+    
+# Since version 2 supports D network features hence we do not need to specify the DLs here.    

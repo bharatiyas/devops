@@ -1,0 +1,443 @@
+kubectl = kubenetes control
+
+# To view K configuration
+$ kubectl config view
+
+# To run a particular D image in K cluster
+$ kubectl run <image_name> --image=<docker_image_repo_location> --port=<port_at_which_you_want_to_run_it>
+Ex: $ kubectl run hello_minikube --image=grc.io/google_containers/echoserver:1.4 --port=8080
+
+# To eexpose a deployment (running D image) to your local machine
+$ kubectl expose deployment <image_name> --type=NodePort
+
+# To get the service URL. This will download the image from Docker repo 
+$ minikube service <service_name> --url
+
+# To start minikube cluster
+$ minikube start
+
+# To stop minikube cluster
+$ minikube stop
+
+# To check minikube logs
+$ minikube logs
+
+# To check cluster ip running on minikube
+$ minikube ip
+
+# To see date on minikube prompt
+$ date 
+
+# To see current time on minikube prompt
+$ time
+
+# To get status of minikube status
+$ minikune.exe status
+
+# To login to minikube
+$ minikube ssh
+
+# To deploy to a K cluster. This will create a deployment and service in K cluster
+$ kubectl apply -f <Deployment_config_filename.yaml>
+
+# To create any K resource like pod, deployment, service, etc. using a yaml file
+$ kubectl create -f <Resource_config_file_path.yaml>
+
+# To create multiple resources present in a directory
+$ kubectl create -f <directory_path>
+
+# To delete the resource created using the create + yaml file
+$ kubectl delete -f <Resource_config_file_path.yaml>
+
+# To get the resources (like deployment, service, pods)
+$ kubectl get <resource_name>
+$ kubectl get deplyments
+
+Sample output:
+NAME           DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+frontend       3         3         3            3           5m
+redis-master   1         1         1            1           5m
+redis-slave    2         2         2            2           4m
+
+Sometimes when you are doing a rolling update or deploying a big pod then AVAILABLE values may not be present.
+
+# To see all services in the Cluster
+$ kubectl get svc
+
+Sample output:
+NAME           TYPE           CLUSTER-IP      EXTERNAL-IP    PORT(S)        AGE
+frontend       LoadBalancer   10.27.253.184   35.201.31.74   80:32270/TCP   8m
+kubernetes     ClusterIP      10.27.240.1     <none>         443/TCP        4h
+redis-master   ClusterIP      10.27.246.175   <none>         6379/TCP       8m
+redis-slave    ClusterIP      10.27.246.86    <none>         6379/TCP       8m
+
+When you start your cluster the "kubernetes" service will be there by default.
+
+if service type is LoadBalancer then there will be an External-IP so that it is accessible from outside the cluster.
+If service type is Cluster-IP or NodePort then there is no External-IP because this service is NOT accessible from outside.
+The IP addresses under Cluster-IP are the IPs within our cluster. 
+
+# To get services in a particular namespaces
+$ kubectl get service --namespace=kube-system
+
+# To get services in all namespaces
+$ kubectl get service --all-namespaces
+
+# To see all the running pods in the K cluster
+$ kubectl get pods
+
+Sample output:
+NAME                            READY     STATUS    RESTARTS   AGE
+frontend-67f65745c-2bqzv        1/1       Running   0          16m
+frontend-67f65745c-fz4bk        1/1       Running   0          16m
+frontend-67f65745c-htnzt        1/1       Running   0          16m
+redis-master-585798d8ff-mr58b   1/1       Running   0          15m
+redis-slave-865486c9df-6dvn9    1/1       Running   0          15m
+redis-slave-865486c9df-dtsk2    1/1       Running   0          15m
+
+# To see pods for all namespaces. Namespaces logically divide the K cluster. We can use po as shortcut to pods:
+$ kubectl get po --all-namespaces
+
+# To describe one pod. This will give you more informatio about the pod
+$ kubectl describe pod <pod_name>
+
+# To expose the port of a pod (creates a new service). Then you can connect to your K cluster on that port and it will redirect to your pod.
+$ kubectl expose pod <pod_name> --port=<port_number> --name=<service_name_different_than_pod_name>
+
+# To expose a pod as a service
+$ kubectl expose pod <pod_name> --type=NodePort --name=<service_name_different_than_pod_name>
+
+# You will see following:
+service "<service_name_different_than_pod_name>" exposed
+
+# exposing it as a service is another way to access the pod. To get the access URL of the service (if using minikube):
+$ minikube service <service_name_different_than_pod_name> --url
+
+This will give you the URL which is accessible externally. You can try this out on the browser or curl:
+http://192.168.99.100:30174
+
+# To port forward the exposed pod port to your local machine. So on your local machine when you got that port it will forward you to that pod port.
+$ kubectl port-forward <pod_name> <vm_port>:<pod_port>
+# This means that any traffic on local port <vm_port> is redirected to <pod_port> of the pod. Once you execute the above command you will see:
+
+Forwarding from 127.0.0.1:<vm_port> -> <pod_port>
+
+# Then if you do curl localhost:<vm_port> you will the result from <pod>/<pod_port>
+# This is one way to quickly test if things are working.
+
+# To attach to a pod to see what's going inside a pod
+$ kubectl attach <pod_name> -i
+
+# To execute commands on the container in the pod. If you multiple containers then you can specify the container name using -c otherwise it will 
+# take the first container
+$ kubectl exec <pod_name> --command
+
+# Examples (here /app is in the container):
+$ kubectl exec nodehelloworld.example.com -- ls /app
+$ kubectl exec nodehelloworld.example.com -- cat /app/Dockerfile
+
+# To add a new label to the pod
+$ kubectl label pods <pod_name> mylabel=lable_name
+
+# To run a shell in a pod. This is useful for debugging. busybox is a very small image which can start your shell. This will enabel you to be in a new
+# pod and then you can connect to your pod which is not functioning. This will start another pod (with busybox) with a new container:
+$ kubectl run -i --tty busybox --image=busybox --restart=Never -- sh
+
+# To enter the shell of the container (when there is only 1 container in the Pod). -i is for interactive input.
+$ kubectl exec  -i -t <pod_name> -- bash
+
+# To enter the shell of the container when there are multiple containers in the pod.
+$ kubectl exec  -i -t <pod_name> -c <container_name> -- bash
+
+# This will display a command prompt where you can execute commands
+## 
+
+
+# To see all the pods with a particular label
+$ kubectl get pod -l tier=<deployment->spec->template->metadata->labels->tier>
+
+Sample output:
+
+NAME                       READY     STATUS    RESTARTS   AGE
+frontend-67f65745c-2bqzv   1/1       Running   0          1h
+frontend-67f65745c-fz4bk   1/1       Running   0          1h
+frontend-67f65745c-htnzt   1/1       Running   0          1h
+
+In the READY column we have Number Of Containers created/mentioned_in_pod_definition
+
+# To get the details about a pod based on labels
+$ kubectl describe deployment -l tier=frontend
+
+describe command can be very useful while troubleshooting
+
+# To delete the pods by labels
+$ kubectl delete pods -l tier=backend
+
+# To see the progress of pods creation
+$ kubectl get pods --watch
+
+Even after deleting the pods we will see that they are being automatically created because of the desired state
+
+# To see the logs for a pod
+$ kubectl logs <pod_name>
+
+logs command will also show the http requests which have come to the pod
+
+# To apply the new configurations
+$ kubectl apply -f <yaml_file_name>
+
+# By default GCP will block EXTERNAL tracffic to the nodes. Therefore, to allow access to the pods with service type
+NodePort, we need to execute following command:
+gcloud compute firewall-rules create guestbook --allow tcp:30080
+
+# To get the external IP of our node (VM):
+gcloud compute instances list
+
+Sample output is:
+NAME                                      ZONE                    MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP   STATUS
+gke-cluster-1-default-pool-e9a6a6e8-sqtl  australia-southeast1-c  n1-standard-2               10.152.0.2   35.201.31.74  RUNNING
+
+For NodePort you would need to use the EXTERNAL_IP:PORT to access the webpage
+http://35.201.31.74:30080/context-root
+
+But if you try the access it using Cluster-IP you will not be able to access it because it is an internal facing point
+
+# To change the number of deployments from command line:
+$ kubectl scale deployment <deployment_name> --replicas=5
+
+But the problem is that it will create a configuration drift.
+
+# To get the deployment status. It will tell you if the your deployment was completed successfully or not.
+$ kubectl rollout status deployments/<deployment_name>
+
+# To rollback the rollout:
+$ kubectl rollout undo deployments/<deployment_name>
+
+# To delete all the deployments. This is useful when you want to get rid of all the Pods in a deployment and all those Pods have replica property.
+# Because if delete the Pods individually then K will recreate another Pod.
+$ kubectl delete deployments --all
+
+When you delete the deployment corresponding pods are also deleted.
+
+WARNING: Delete the services 1-by-1 because if you delete --all then even the default "kubernetes" will be deleted
+
+# To delete a service
+$ kubectl delete service -l tier=<tier_name>
+
+# To deletes the pods
+$ kubectl delete pods --all
+
+# To watch what's going on
+$ kubectl get pods --watch
+
+# To create a terminal with a mysql client
+$ kubectl run -it --rm --image=mysql:5.6 --restart=Never mysql-client -- mysql -h mysql -ppassword
+
+# To describe a service
+$ kubectl describe service <service_name>
+
+Name:                     nodehelloworld-service
+Namespace:                default
+Labels:                   app=helloworld
+Annotations:              <none>
+Selector:                 app=helloworld
+Type:                     NodePort
+IP:                       10.109.88.189
+Port:                     <unset>  3000/TCP
+TargetPort:               3000/TCP
+NodePort:                 <unset>  30174/TCP
+Endpoints:                172.17.0.2:3000
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Events:                   <none>
+
+
+# We can connect to this service from another pod using the endpoint value in the Endpoints or using NodePort.
+# NodePort is a static port that is always accessible. To try this out you can start another pod with busybox and on the shell command prompt
+# you can execute the following command:
+## telnet 172.17.0.2 3000
+## GET /
+
+# If you have to connect to the service from a container with the same pod (as the service) then you can connect to the Port mentioned in Port.
+
+# To scale a replication controller using replication file:
+$ kubectl scale --replicas=<number_of_replicas> -f <path_of_the_replication_file>
+
+Now you will 4 Pods:
+
+$ kubectl get pods
+
+NAME                              READY     STATUS             RESTARTS   AGE
+hello-minikube-5cdbf6d885-zdmqq   0/1       ImagePullBackOff   0          22d
+helloworld-controller-58q8n       1/1       Running            0          10m
+helloworld-controller-krmgn       1/1       Running            0          1m
+helloworld-controller-vkcnl       1/1       Running            0          1m
+nodehelloworld.example.com        1/1       Running            2          11d
+
+# To get Replication Controllers 
+$ kubectl get rc
+
+# To scale a replication controller using replication controller name:
+$ kubectl scale --replicas=<number_of_replicas> rc/<rc_name>
+
+# To delete a replication controller
+$ kubectl delete rc/<rc_name>
+
+# To get the Replication Set
+$ kubectl get rs
+
+Sample output:
+-------------
+
+NAME                               DESIRED   CURRENT   READY     AGE
+hello-minikube-5cdbf6d885          1         1         0         23d
+helloworld-deployment-64b4c45585   3         3         3         1m
+
+# To get Pods and show labels attached to those pods. A comma separated list of labels is shown
+$ kubectl get pods --show-labels
+
+# To get Nodes and show labels attached to those nodes
+$ kubectl get nodes --show-labels
+
+# To change the Docker image or run different version of the image inside a running deployment
+$ kubectl set image deployment/<deployment_name> <label_name>=<new_image_name>:<new_version>
+
+If you do not specify any version then "latest" version will be taken
+
+# To edit (like changing the Docker image as above) a deployment object:
+$ kubectl edit deployment/<deployment_name>
+
+When you execute edit command it will open the yaml file (for that deployment) in an editor and you can edit it and save it.
+edit is very useful because it also shows some extra settings which we may not have put in our yaml file. Like:
+livenessProbe -> successThreshold, failureThreshold
+
+
+# To get the status of your rollout. It shows how the deployment is progressing. For example: If you update the image with the new version.
+$ kubectl rollout status deployment/<deployment_name>
+
+# To get a history of your rollouts. 
+$ kubectl rollout history deployment/<deployment_name>
+
+Sample Output:
+-------------
+REVISION  CHANGE-CAUSE
+2         <none>
+3         <none>
+
+It does not show any cause. for it to show cause we should have created the deployment with --record opion
+
+By default it stores only 2 historical records. If you want it store more history then you need to "edit" the deployment and add a new property called
+revisionHistoryLimit to the yaml file.
+
+# To rollback the rollout to a preious version:
+$ kubectl rollout undo deployments <deployment_name>
+
+# To rollback the rollout to another version:
+$ kubectl rollout undo deployments <deployment_name> --to-revision=n
+
+# To access a deployment you will need to expose it as a service:
+$ kubectl expose deployment <deployment_name> --type=NodePort
+
+<deployment_name> is mentioned in the metadata->name in the yaml file
+
+expose command creates a service
+
+# To add a label to a Node
+$ kubectl label nodes <node_name> <label>=<label_value>
+
+Ex - kubectl label nodes minikube hardware=high-spec
+
+# To get kubenetes configuration. this will show Kubernetes master info
+$ kubectl cluster-info
+
+Sample output:
+
+Kubernetes master is running at https://192.168.99.100:8443
+
+# To create a configmap from a conf file
+$ kubectl create configmap <name_of_config> --from-file=<location_of_.conf_file>
+
+# To get all the configmaps
+$ kubectl get configmaps
+
+# To print configmaps in yaml format
+$ kubectl get configmap nginx-config -o yaml
+
+# To drain the node, which means to make the node offline. This will kill the pod on the node. The pod and the container will be recreated on a new node.
+$ kubectl drain <node_name> --force
+
+Sample output:
+
+node "ip-172-20-63-178.ap-southeast-2.compute.internal" already cordoned
+WARNING: Deleting pods not managed by ReplicationController, ReplicaSet, Job, DaemonSet or StatefulSet: kube-proxy-ip-172-20-63-178.ap-southeast-2.compute.internal
+pod "kube-dns-autoscaler-f4c47db64-f77j4" evicted
+pod "helloworld-deployment-748cd6c996-xkm7j" evicted
+pod "kube-dns-7f56f9f8c7-dw52g" evicted
+node "ip-172-20-63-178.ap-southeast-2.compute.internal" drained
+
+# To get PersistentVolumeClaims
+$ kubectl get pvc
+
+# To get Horizontal Pod Autoscaler
+$ kubectl get hpa
+
+NAME                     REFERENCE                TARGETS           MINPODS   MAXPODS   REPLICAS   AGE
+hpa-example-autoscaler   Deployment/hpa-example   <unknown> / 50%   1         10        3          2m
+
+Notice MINPODS and MAXPODS
+
+# To run the image busybox called load-generator
+$ kubectl run -i --tty load-generator --image=busybox /bin/sh
+
+# To create a namespace
+$ kubectl create namespace <namespace_name>
+
+# To list all namespaces
+$ kubectl get namespaces
+
+# To change the default namespace to launch the reources:
+$ export CONTEXT=$(kubectl config view | awk '/current/context/ {print $2}')
+$ kubectl config set-context $CONTEXT --namespace=<differece_namespace_name>
+
+# To get quota in a namespace
+$ kubectl get quota --namespace=<namespace_name>
+
+Sample output:
+NAME            AGE
+compute-quota   21m
+object-quota    21m
+
+# To describe compute-quota in a namespace
+$ kubectl describe quota/compute-quota --namespace=<namespace_name>
+
+Sample output:
+Name:            compute-quota
+Namespace:       myspace
+Resource         Used  Hard
+--------         ----  ----
+limits.cpu       800m  2
+limits.memory    2Gi   2Gi
+requests.cpu     400m  1
+requests.memory  1Gi   1Gi
+
+# To describe limits
+
+$ kubectl describe limits limits --namespace=myspace
+
+Sample output:
+
+Name:       limits
+Namespace:  myspace
+Type        Resource  Min  Max  Default Request  Default Limit  Max Limit/Request Ratio
+----        --------  ---  ---  ---------------  -------------  -----------------------
+Container   cpu       -    -    100m             200m           -
+Container   memory    -    -    256Mi            512Mi          -
+
+Shows that the limits were defined for the containers.
+
+# To check kubectl config
+$ kubectl config view
+
+# To see all the Instance Groups in a HA cluster of Kops cluster
+$ kops edit ig --name=kubernetes.amazeit.tech nodes --state=s3://kops-state-skb
+

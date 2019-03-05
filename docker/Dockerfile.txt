@@ -1,0 +1,17 @@
+# A Docker file should be named as "Dockerfile" and should not have any extention 
+# Instructions in Dockerfile are case-insensitive. But by convention and also to separate the arguments from instruction,
+# instructions are mentioned in CAPITAL and arguments in lower case
+# First line should be "FROM <base image>"
+FROM debian:jessie
+RUN apt-get update
+RUN apt-get install -y git  # -y option is needed because we will not be able to answer the prompt
+RUN apt-get install -y vim
+
+Sample content of a Dockerfile:
+
+FROM node:4.6        # My image is based on the "node" (node.js) image which is publicly available. D will download 4.6 version of the image
+WORKDIR /app         # Work directory in the linux container will be /app
+ADD ./app			 # Current directory is going to be added/copied to /app
+RUN npm install      # D will run "npm install" command. "npm install" command will install all the dependecies for node.js application to run
+EXPOSE 3000          # Port 3000 of the container will be exposed externally
+CMD npm start   	 # When the container starts it will run "npm start" command     

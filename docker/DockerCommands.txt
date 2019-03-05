@@ -1,0 +1,266 @@
+Docker Commands
+---------------
+
+-- To list all the D machines
+$ docker-machine ls 
+
+-- Print the version of the client and the machine
+$ docker version
+
+-- To find the DI in your local machine
+$ docker images
+
+
+-- To print the Hash values of the docker image
+$ docker image -q --no-truc
+
+-- docker run command will create the DC using the image we specified , then spin up the container and run it (in the foreground). DI will be 
+-- specified with repository_name:tag. We also specify the command we want to run in the container. In this case it is 'echo "Hello world"'
+$ docker run busybox:1.24 echo "Hello world"
+
+-- you can also use docker run with docker image_id. Something like:
+$ docker run  4b27c0684489
+
+-- to start the C in an interactive mode and go inside the container, use -i and -t options. -i is for interactiive mode. -t creates a pseudo TTY
+-- that attaches stdin and stdout
+$ docker run -i -t busybox:1.24 
+
+-- To run openJDK(8) container
+$ docker run -i -t openjdk:8
+
+-- To come out of the container. Docker also shuts down the container
+$ exit
+
+-- To start the C in detached mode, so that we use the console for other commands. It returns a long C Id.
+$ docker run -d busybox:1.24
+
+-- To see which DCs are running
+$ docker ps
+
+-- To see all DCs (running and stopped)
+$ docker ps -a
+
+-- If we do not want to keep the container. Want to remove it after C exists
+$ docker run --rm busybox:1.25 sleep 1
+
+-- To specify the name of the container. If we do not specify a name then D will specify a C name.
+$ docker run --name hello_world busybox:1.24
+
+-- To get low level image on an DI or DC. Info is displayed in json format
+$ docker inspect <container_id>
+
+-- To assign a new port (to a tomcat image). Access the tomcat page at: http://192.168.99.100:8888/
+-- IP can be found at the top of the docker terminal (IP is printed when docker starts)
+$ docker run -it --rm -p <host_port>:<container_port> tomcat:8.0
+
+-- If you have started a container in foreground mode then to exit the container
+$ ctrl + c
+
+-- to check the logs 
+$ docker logs <container_id>
+
+-- to check the layers of DI in a particular image
+$ docker history repository:image
+$ docker history busybox:1.24
+
+-- to stop a DC running in background (started with -d option)
+$ docker stop <DC_name>
+
+-- to stop multiple DC
+$ docker stop <DC1_name> <DC2_name> ...
+
+-- to remove a stopped DC
+$ docker rm <DC_name>
+
+-- to remove all stopped DC
+$ docker rm $(docker ps -q -f status=exited)
+
+-- apt-get is a package management tool in Linux. To run Debian container and install git in it
+$ docker run -it debian:jessie
+$ apt-get update && apt-get install -y git
+
+-- to create a new DI we use commit. Docker commit command would save the changes we made to the Docker container's file system to a new image:
+$ docker commit container_id repository_name:tag
+$ docker commit 0bdd70d290e6 sanjayfromgomia/debiangit:1.0.0
+sha256:596f29cd57f07cf62089c341b73d9b63c7b1e98c3c92b26f6a7f15474a1e6197  -- Long id of the new images
+
+-- To spin a new container frm the new image
+$ docker run -it sanjayfromgomia/debiangit:1.0.0
+
+-- To create a D file
+$ vi Dockerfile
+
+-- To build an image from the instructions given in a Dockerfile. -t option is for tagging the new image
+$ docker build -t sanjayfromgomia/debiangitvim <build_context_path> .
+
+-- build_context_path is the path where all the resources are kept, like files we want to copy to our new image. The D client only parses the command
+-- but the execution of the command happens at the server side. Hence the client gets all the files from the build context, prepares a tarball. It 
+-- then transfers the tarball to the server for execution of the command.
+-- D client will search for the Dockerfile in the root directory of the build_context_path. If the Dockerfile exists in the same directory then use '.'
+
+-- finally it would print the image id:
+
+Successfully built 29909a4c811f
+Successfully tagged sanjayfromgomia/debiangit:latest
+
+-- In the above result 29909a4c811f is the container ID. You can then run the container with this ID:
+$ docker run -p 3000:3000 -it 29909a4c811f
+
+-- To run linux distribution
+$ docker run -d centos tail -f /dev/null
+
+-- To avoid using cache:
+$ docker build -t sanjayfromgomia/debiangit ./DirForDockerfile/ --no-cache=true
+
+-- To push an image to docker hub we need to rename the docker image to docker_hub_id/repository_name
+$ docker tag <image_id> <docker_hub_repo>/<image_name>:<tag_name_or_version>
+
+-- To push an image to Docker hub. We should always specify a version name otherwise Docker will give version as 'latest'. We should avoid using
+-- 'latest' version because latest may not be greatest.
+$ docker login --username=sanjayfromgomia
+Password: *****
+$docker push <docker_hub_repo>/<image_name>:<tag_name_or_version>
+
+-- To print the information about docker machine
+$ docker-machine ls
+
+-- To execute a command in a running container
+$ docker exec -it <container_id> <command_to_run>
+$ docker exec -it <container_id> bash
+-- Will take you inside the container's command prompt
+
+-- To display all the running processes on a running container
+$ ps axu
+
+-- To link the DCs
+$ docker run -d -p 5000:5000 --link redis dockerapp:v0.3
+
+-- To check is docker-compose is installed or not
+$ docker-compose version
+
+-- To run the docker-compose file. 'up' command will build services for all images defined in the yaml file. It will create and start all the 
+-- containers. 
+$ docker-compose up
+
+-- To run docker-compose in detach mode
+$ docker-compose up -d
+
+-- To check status of DCs managed by docker-compose. "docker ps" command does not show the DCs started by docker-compose.
+$ docker-compose ps
+
+-- To get help on docker-compose commands
+$ docker-compose -h
+
+-- To start the services
+$ docker-compose start
+
+-- To see logs
+$ docker-compose logs
+
+-- To see logs of a particular container (service)
+$ docker-compose <service_name_mentioned_in_docker-compose_file>
+
+-- To see rolling logs (like tail -f in Uni/Linu-x)
+$ docker-compose logs -f
+
+-- To stop the services, without removing them. It also does not remove the default bridge n/w created by D
+$ docker-compose stop
+
+-- To stop the services and remove them. It also removes the default bridge n/w created by DC
+$ docker-compose down
+
+-- To remove the containers
+$ docker-compose rm
+
+-- To run a one time command against a service inside a container
+$ docker-compose run <docker_service_name> <command>
+Ex - docker-compose run dockerapp python test.py
+
+
+-- To build/rebuild the image(s) based on the doc file. This is needed whenever we update an image.
+$ docker-compose build
+
+-- To check different networks available
+$ docker network ls
+
+-- To create a closed container (from busybox image)
+$ docker run -d --net none busybox sleep 1000
+
+-- To describe get the IP address (alternate way)
+$ docker inspect <container_id> | grep IPAddress
+
+-- To verify the network
+$ docker exec -it <container_id> /bin/ash   -- ash is a very light weight unix shell.
+$ ifconfig					-- shows only loopback (127.0.0.1) address
+
+		  Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+$ ping 8.8.8.8             -- 8.8.8.8 is google IP. It will not get any response
+		PING 8.8.8.8 (8.8.8.8): 56 data bytes
+		ping: sendto: Network is unreachable
+		
+-- To print the details of the bridge network
+$ docker network inspect bridge		
+
+	 {
+        "Subnet": "172.17.0.0/16",
+        "Gateway": "172.17.0.1"
+     }
+	 
+-- It prints the Subnet and Gateway. IP range of DCs is from 172.17.0.0 to 172.17.255.255
+
+-- To print the n/w interfaces
+$ docker exec -it <container_id> ifconfig
+
+-- private interface connected to the bridge n/w. IP is 172.17.0.2 (between 172.17.0.0 to 172.17.255.255). It can be used to access other C in the 
+-- same bridge n/w
+
+eth0      Link encap:Ethernet  HWaddr 02:42:AC:11:00:02
+          inet addr:172.17.0.2  Bcast:0.0.0.0  Mask:255.255.0.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:10 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:828 (828.0 B)  TX bytes:0 (0.0 B)
+
+-- loopback interface. Same as --net none flag. Used for internal applications
+		  
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+		  
+-- To create a bridge n/w
+$ docker network create --driver bridge <bridge_network_name>
+
+-- New bridge network will be having a different subnet and range. Run inspect:
+$ docker network inspect <bridge_network_name>
+
+ {
+        "Subnet": "172.19.0.0/16",   --- This one will now have a range 172.19.0.0 to 172.19.255.255
+        "Gateway": "172.19.0.1"
+ } 		  
+ 
+-- To create a container in the new bridge n/w
+$ docker run -itd --name c_3 --net <bridge_network_name> busybox sleep 1000
+
+-- To connect 1 C in 1 bridge n/w to another Cs in different bridge n/w
+$ docker network connect <bridge_n/w_name> <container_name_in_other_bridge_n/w>
+
+-- To disconnect a container from a connected bridge n/w_name
+$ docker network disconnect <bridge_n/w_name> <container_name_in_other_bridge_n/w>
+
+-- To push a DI to D hub
+$ docker push
+
+-- Set environment variables while running a container:
+$ docker container run -itd -e 'envVar1=value1' -e 'envVar2=value2' imageName:tagName

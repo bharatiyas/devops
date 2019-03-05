@@ -1,0 +1,37 @@
+Continous Integration: It is a software engineering practice in which isolated changes are immediately tested and reported when they are added (checked-in) 
+						to a larger code base. 
+						It helps us to know if a defect has been introduced in the code base and corrected ASAP.
+						
+Sonar Qube - is a code quality tool which measures the quality of your code against industry standards and metrics. It identifies the issues with the code						
+			 when the code smells, bugs and security issues when the code is built using Jenkins, before the code is deployed in QA env.
+			 For my learning purpose Sonar qube is running on internal H2 DB, but in real enterprise scenario it will run on its own RDBMS server.
+			 
+			Sonarqube can be integrated into our development lifecycle. 
+			 
+			 It asks you to generate a token. A token can be associated with a project and can be used when you run Sonarqube against a project. For the
+			 project "devops" it generated:   
+										a1c8b2502b36792cc48127c6e284a990c0a5dadc
+										
+			Maven settings it provided are:
+			
+										mvn sonar:sonar -Dsonar.host.url=http://sonarqube.skb.com:9000 -Dsonar.login=a1c8b2502b36792cc48127c6e284a990c0a5dadc
+		
+			To run Sonar:
+			$ mvn sonar:sonar  
+						
+			It download all Sonar dependencies and the rules. It runs the Sonar code quality coverage and integration and going to publish that to 
+			Sonarqube. At the end it says that:
+					 ANALYSIS SUCCESSFUL, you can browse http://localhost:9000/dashboard/index/com.skb.learn.devops:devops
+					 
+			All the analysis data and metrics are pushed to Sonarqube.
+			
+Jenkins Pipeline: Using Jenkins you can build the Pipeline where you can split the different stages of CI/CD process and visualize it into dependency 
+				  metrics. You can create different stages (like package, deploy, etc) in a single file and include the file as part of the code. 
+				
+				Normally we use Groovy to create this file.
+				
+				There are different ways to configure the pipeline file. In the file we define the configurations and steps which we normally define
+				in a Jenkins job/item. We can include some smoke test also.
+				Jenkins looks for the JenkinsFile at the root of the project.
+				
+				

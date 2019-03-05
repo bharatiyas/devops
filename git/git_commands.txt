@@ -1,0 +1,477 @@
+To install git on ubuntu:
+$ sudo apt-get install git
+
+Clone from a repo:
+$ git clone http://github.com/wardviaene/docker-demo
+
+$ git config --global user.name "Sanjay Bharatiya"
+$ git config --global user.email "sanjayfromgomia@gmail.com"
+
+-- You can do the above setting through Source Tree. Got to Tools -> Options -> Full Name and Email Address
+
+$ git config --list
+
+$ git <verb> --help
+$ git help <verb>
+
+-- You can use normal Unix/Linux commands on git bash command prompt. Like
+$ ls
+$ pwd
+$ cat
+
+-- ls will show the files only in that branch
+-- cat will show only the committed content. So if you modified a file but did not commit the changes then 'cat filename' will only show the contents
+-- which is committed.
+
+$ git remote add origin
+
+$ git pull origin master
+
+-- Here master branch is the main branch. I think it like the trunk in SVN.
+
+
+-- At the end of your work, if you want to push changes then use git push. Do not make frequent changes in git because that may interrupt ther 
+-- collaborators/contributors/developers
+
+$ git push origin
+
+-- Git has an intermediate layer which resides between your workspace and local repo called index (staging area). So if you want to commit any changes to the local repo
+-- then you must add those files to index first. 
+-- To know which files are in index and which are not you can use:
+$ git status
+
+-- Git status shows the difference between WD, SA and Local Repo
+
+-- It shows you untracked files. Untracked files are those files which have not been added to index yet.
+
+***************************************************************************************************************************************************
+
+Add
+---
+
+-- If you files are not in the index then you cannot commit those files to local repo. To add the files to index:
+$ git add
+
+-- To add all the files in one go:
+$ git add -A
+
+***************************************************************************************************************************************************
+
+Commit
+------
+
+-- How does commit work? Consider commit as an object which is a version of your project. So lets say that you have initial version of your project 
+-- called C1. After you made some changes and yu have committed those changes. Then git will make another commit object which will be of different version
+-- with the changes. So it will contain the snapshots of the repo at a given time.
+$ git commit -m "description message"
+
+
+-- commit will commit all the tracked files. So if you made changes to a file which was in the index, you do need to "git add" it again because it was
+-- already a tracked file in the index.
+
+-- You cannot commit without a message. You commit without 'm' flag but it will then display a prompt to write the message.
+
+-- To commit all the files at once:
+$ git commit -a -m "desc"
+
+-- To give a new commit message to a commit
+$ git commit --amend -m "New commit message"
+
+
+-- To see the logs for a particular commit
+$ git show <commit_id>
+
+***************************************************************************************************************************************************
+
+Log
+---
+
+
+-- To see a trace of what all has been added
+$ git log
+
+commit 3009b5832b9870d368dd92933a9dcfbd262bd24e (HEAD -> firstbranch, origin/firstbranch, master)
+Author: Sanjay Bharatiya <sanjayfromgomia@gmail.com>
+Date:   Thu Jul 20 01:28:06 2017 +1000
+
+    NEw files for Rebasing
+
+commit 6816b29ccd62f104bd947d795581b25386c1ff98
+Author: Sanjay Bharatiya <sanjayfromgomia@gmail.com>
+Date:   Thu Jul 20 01:11:05 2017 +1000
+
+    Checking branch level changes and merging
+
+commit abe232d2144084f2688e80bb1fd1303e506ea72f
+Author: Sanjay Bharatiya <sanjayfromgomia@gmail.com>
+Date:   Thu Jul 20 00:45:59 2017 +1000
+
+    Added two new files to the firstbranch
+
+commit 3b3b01c716825da73ce78d380cfabde63f9e5a3c
+Author: Sanjay Bharatiya <sanjayfromgomia@gmail.com>
+Date:   Wed Jul 19 05:46:09 2017 +1000
+
+
+
+-- To print concise logs in a graph format:
+$ git log --oneline --graph --decorate --all
+
+-- To see logs for particular number of days
+$ git log --since="2 days ago"
+
+-- To see logs for a particular file
+$ git log -- <file_name>
+
+-- reflog - Reference logs, record when the tips of branches and other references were updated in the local repository. 
+$ git reflog
+
+-- To view the information about a remote repo:
+$ git remote -v
+
+***************************************************************************************************************************************************
+
+Alias
+-----
+
+-- To create an alias for a command
+$ git config --gloabl alias.<alias_string> "<command_and_its_args_but_no_git>"
+
+-- To modify the alias options open git config in the configured text editor and modify the alias_string
+
+***************************************************************************************************************************************************
+
+Help
+----
+-- To see help on any command
+$ git help <command>
+
+$ git <command> --help
+
+***************************************************************************************************************************************************
+
+Branch
+------
+
+-- There are two kind of branches: 
+--     * Local branches - Are only created in your local repository.
+--     * Remote tracking
+-- create a new branch from master branch when you want to work separately from the master branch or you want to work on a new feature.
+
+-- To create a branch and then checkout:
+$ git branch <branch_name>
+$ git checkout <branch_name>
+
+-- To checkout and create a new branch in one step:
+$ git checkout -b <new_branch_name>
+
+-- To see which all branches have been merged:
+$ git branch --merged
+
+-- To delete a local branch:
+$ git branch -d
+
+-- To delete a branch from a remote repo:
+$ git push origin --delete <branc_name_to_delete>
+
+-- To view the information about all branches (local and remote):
+$ git branch -a
+
+-- To view the information about local branches:
+$ git branch
+
+***************************************************************************************************************************************************
+
+Checkout
+--------
+
+-- The new branch will contain all the files from the master (its originating branch)
+-- To switch to the new branch you need to checkout to that branch:
+$ git checkout <branch_name>
+
+-- To move the HEAD to a particular commit
+$ gir checkout <commit_id>
+
+
+-- To Update files in the working tree to match the version in the index or the specified tree. If no paths are given, git checkout will also update
+-- HEAD to set the specified branch as the current branch.
+$ git checkout <branch>
+
+-- You can use them together:
+$ git stash && git checkout v0.2
+
+-- To revert to a previous version yu need to get the first 8 characters from the hash of the change log:
+
+-- Then checkout the file in that commit to rollback changes to that particular file:
+$ git checkout 6816b29c <file_to_revert>
+
+-- Suppose you make lot of changes to an existing file. But you are not happy with the changes. You want to revert the changes and get the same one
+-- from the git repo
+$ git checkout -- <file_name>
+
+-- Above command is also useful to restore a file if you have deleted a file from the directory (using OS commands)
+
+***************************************************************************************************************************************************
+
+Merge
+-----
+
+-- Merging is a way to combine the work different branches together. After branching out from master branch you should always merge with the 
+-- master branch. You should always checkout into the branch where you want to merge or whichever is your destination branch.
+
+$ git merge <branch_name_to_be_merged_into_this_branch> -m "Messaging for merging"
+
+-- As a process of merge a "merge commit" is also done with the message provided above. If no message is provided then git provides a default message
+
+-- Steps to merge the current branch you are in to another branch then
+1)	$ git checkout <target_branch>
+2)	$ git merge <your_initial_previous_branch>
+
+***************************************************************************************************************************************************
+
+OS Type commands
+----------------
+
+-- To delete a file. This will directly remove the file git staging area. We do not need to execute `git add -A` if we would have done OS delete
+$ git rm <file_name_to_delete>
+
+-- To move a file from directory to another
+$ git mv <path_of_file_to_move> <new_location>
+
+-- Above command is similar to two steps:
+$ OS level move
+$ git add <new_file_location>
+
+***************************************************************************************************************************************************
+
+Rebase
+------
+
+-- Rebasing: is also a way of combining the work between different branches. It can be used to make a linear sequence of commits.
+-- Rebasing is another kind of merging. It places your new-branch to the top of the workflow. You get a cleaner project history.
+-- Rebasing solves the same problem as merge. Both these commands are designed to integrate changes from one branch into another branch - they
+-- do it in different ways.
+
+$ git checkout <target_feature_branch>
+$ git rebase master
+
+-- If during rebasing you get conflicts then first resolve the conflicts and continue:
+$ git rebase --continue
+
+-- To abort rebasing:
+$ git rebase --abort
+
+-- To skip rebasing:
+$ git rebase --skip
+
+-- To rebase your local master branchto remote master branch 
+$ git pull --rebase origin master
+
+***************************************************************************************************************************************************
+
+Stash
+-----
+
+-- Git stash - If you were working on some feature but you have to leave it in between to work on smething else then yu can git stash it. 
+-- Then git stores that branch separately from workflw. At a later pint of time when yu want to work on it again and reattach that feature into 
+-- your workflow then you reattach the stash
+
+$ git stash
+
+-- By default Stash only stashes staged files. It does not stash ignored and unstaged (un-added) files. To stash unstaged files as well:
+$ git stash -a
+
+-- To stash only unstaged files
+$ git stash -u
+
+-- To shash with a messgae
+$ git stash save "Stash message"
+
+-- To list all the stash
+$ git stash list
+
+-- To apply the last stash
+$ git stash apply
+
+-- To apply a particular stash
+$ git stash apply stash@{i}
+
+-- To drop the last stash
+$ git stash drop
+
+-- To drop a particular stash
+$ git stash drop stash@{i}
+
+-- To delete the last stash
+$ git stash pop
+
+-- To show the details of a particular stash
+$ git stash show stash@{i}
+
+-- To drop all stashes
+$ git stash clear
+
+-- To stash and create a new branch out of the stash
+$ git stash branch <branch_name>
+
+***************************************************************************************************************************************************
+
+Tagging
+-------
+
+-- Git has the ability to tag specific points in history as being important. 
+-- Typically people use this functionality to mark release points (v1.0, and so on)
+
+-- To create leightweight tag
+$ git tag <tag_name>
+
+-- To create annotated tag
+$ git tag <tag_name> -a "Tagging message"
+
+-- To show a tag
+$ git tag --show <tag_name>
+
+-- To list all tags
+$ git tag list
+
+-- To create a tag from a commit
+$ git tag <tag_name> <commit_id>
+
+-- To modify a tag
+$ git tag <tag_name> -f <new_commit_id>
+
+-- To compare 2 tags
+$ git diff <tag_1> <tag_2>
+
+
+***************************************************************************************************************************************************
+
+-- To track an existing remote project with git we use clone
+$ git clone <url_of_the_repo> <where_to_clone>
+
+
+
+
+
+***************************************************************************************************************************************************
+
+diff
+----
+
+-- To view the differences between the files in staged/index area and working directory. But this will show differences only when the file is present
+-- in both the areas
+$ git diff
+
+-- To view the changes between the files present in local repository and staged area
+$ git diff --staged
+
+-- To view the changes between the local and remote repository branches
+$ git diff local_branch_name origin/remote_branch_name
+
+-- To view the differences for a particular file
+$ git diff <file_name>
+
+***************************************************************************************************************************************************
+
+Reset
+-----
+
+-- To remove files from the staging area/index:
+$ git reset <file_to_be_removed_from_staging_aread>
+$ git reset -- removes all the files from the staging area
+
+-- To revert a file from previous commit. This will remove the file from taging area to working area.
+$ git reset HEAD <file_name_to_revert>
+
+-- You can also use ~' or commit-id
+$ git reset HEAD~
+$ git reset HEAD commit-id
+
+-- There are 3 types of resets for commits
+-- 1. Normal reset - Will move all the files/changes after that commit (with <commit_id>) to the WA
+$ git reset <commit_id> 
+
+-- 2. Soft reset -- Will move all the files/changes after that commit (with <commit_id>) to the SA
+$ git reset --soft <commit_id>
+
+-- 3. Hard reset - All the changes after that commit are lost
+$ git reset --hard <commit_id>
+
+***************************************************************************************************************************************************
+
+.gitignore
+----------
+
+-- To create a list of type of files to be ignored for any git commit, we can create a .gitignore file and then list all the files there:
+$ touch .gitignore
+$ vi .gitignore
+	<file_name>
+	*.pattern
+	<Folder_Name>/
+	
+-- Then "git status" will not show the files mentioned in .gitignore.
+-- We also want to checkin .gitignore file so that the repository also knows to ignore those files
+
+***************************************************************************************************************************************************
+
+Setting up push/pull to remote repo
+-----------------------------------
+
+-- To push changes to the central/remote/origin repo you need to use ssh. The ssh URL can be obtained from github page.
+-- To use ssh you need to generate a public key and add it to your github account.
+$ ssh-keygen
+$ cat <ssh-publickey-file-location>
+
+-- Copy the contents of file to github.com -> Settings -> SSH and GPG keys -> New SSH Key -> Add SSH key
+-- Then ssh to github:
+
+$ ssh -T git@github.com
+
+$ git checkout <branch_name_which_you_want_to_push>
+$ git push origin <branch_name_which_you_want_to_push>
+
+$ git push -u origin <branch_name>
+-- -u option associates the branch_name (local) to the same branch (in remote)
+
+***************************************************************************************************************************************************
+
+Comments/Definitions:
+---------------------
+
+1) HEAD - It is a pointer to the top of your current (checked out branch). For example, HEAD -> master means HEAD is pointing to the master, means 
+		  this is the current branch.
+		  
+2) Fast-Forward - If Master has not diverged (means there were no new commits to the master since the last commit to feature branch then
+				  instead of creating a new commit, git will just point master to the latest commit of the feature branch. 
+				  This is a “fast forward.” There won't be any "merge commit" in fast-forwarding merge.
+				  This means that when something is being merged to the master and if there are no merge conflicts.
+				  
+3) git pull = git fetch + git merge
+
+4) Suppose you are working on some feature branch (in your local) and you want to pull the latest from develop branch from central then
+
+	a) $ git checkout <feature_branch>
+	b) $ git pull origin develop
+
+5) fetch - Fetches the changes from remote repo which are not present 
+
+6) Configure Notepad++ as Git Editor
+
+	1. Open Git Bash
+	2. Create file .bash_profile
+	3. Add Alias
+		alias npp='notepad++.exe -multiInst -nosession'
+		
+	4. Exit and relaunch GitBash
+	5. Type shortcut to confirm the configuration
+	6. Confgiure NPP with Git
+		git config --global core.editor "\"<Path to NPP exe\""
+		
+	7. Exit and relaunch
+	8. Check config
+		cat ~/.gitconfig
+		
+			or
+
+	9. Open global config in npp:		
+		git config --global -e
